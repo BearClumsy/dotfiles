@@ -1,8 +1,0 @@
-command = zsh
-env = GHOSTTY_USE_OMZ=1
-
-font-family = "Hack Nerd Font"
-font-size = 18
-background-opacity = 0.94
-
-theme = dark:Catppuccin Mocha,light:Catppuccin Latte
