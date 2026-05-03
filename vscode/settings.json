@@ -1,0 +1,37 @@
+{
+  // ── vscode-neovim ──────────────────────────────────────────────────────
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "vscode-neovim.compositeKeys": {
+    "jk": { "command": "vscode-neovim.escape" },
+    "jj": { "command": "vscode-neovim.escape" }
+  },
+
+  // ── Editor ────────────────────────────────────────────────────────────
+  "editor.lineNumbers": "relative",
+  "editor.scrollBeyondLastLine": false,
+  "editor.cursorSurroundingLines": 8,
+  "editor.wordWrap": "off",
+  "editor.formatOnSave": true,
+  "editor.inlayHints.enabled": "on",
+  "editor.smoothScrolling": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.suggest.preview": true,
+  "editor.acceptSuggestionOnEnter": "on",
+
+  // ── Explorer ──────────────────────────────────────────────────────────
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "workbench.tree.indent": 12,
+
+  // ── Workbench ─────────────────────────────────────────────────────────
+  "workbench.startupEditor": "none",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.enablePreview": false,
+
+  // ── Terminal ──────────────────────────────────────────────────────────
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.smoothScrolling": true
+}

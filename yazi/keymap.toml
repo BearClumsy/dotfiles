@@ -1,0 +1,4 @@
+[mgr]
+prepend_keymap = [
+  { on = "p", run = "plugin smart-paste", desc = "Paste with replace prompt on conflict" },
+]

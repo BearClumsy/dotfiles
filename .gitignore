@@ -1,0 +1,9 @@
+.DS_Store
+tmux/plugins/
+raycast
+history.txt
+github-copilot/
+thefuck/__pycache__/
+**/__pycache__/
+*.pyc
+zsh/claude_config.zsh

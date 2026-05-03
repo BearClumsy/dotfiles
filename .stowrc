@@ -1,0 +1,10 @@
+--target=~/.config
+--ignore=.stowrc
+--ignore=DS_Store
+--ignore=zsh
+--ignore=p10k
+--ignore=idea
+--ignore=setup.sh
+--ignore=.claude
+--ignore=screenshots
+--ignore=README.md
