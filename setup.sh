@@ -21,6 +21,18 @@ stow --target="$HOME/.config" .
 echo "Stowing ~/ packages..."
 stow --target="$HOME" zsh p10k idea
 
+read -r -p "Set up VS Code config? [y/N] " reply
+if [[ "$reply" =~ ^[Yy]$ ]]; then
+  echo "Symlinking VS Code config..."
+  VSCODE_DIR="$HOME/Library/Application Support/Code/User"
+  mkdir -p "$VSCODE_DIR"
+  ln -sf "$DOTFILES_DIR/vscode/settings.json"    "$VSCODE_DIR/settings.json"
+  ln -sf "$DOTFILES_DIR/vscode/keybindings.json" "$VSCODE_DIR/keybindings.json"
+  echo "VS Code config linked."
+else
+  echo "Skipping VS Code setup."
+fi
+
 # --- 3. Install brew packages ---
 echo "Installing brew packages..."
 brew tap cormacrelf/tap
