@@ -532,23 +532,100 @@ inoremap <C-U> <C-G>u<C-U>
 inoremap <C-W> <C-G>u<C-W>
 " Q isn't exactly the same.
 nnoremap Q @@
-" There are several more Neovim mappings that need to be ported.  See link.
 
-" Jetbrains conflicts
-" https://github.com/JetBrains/ideavim/blob/master/doc/sethandler.md
-" None, yet.  Possible conflicts: ctrl -6befhjklorsvw
+" Back/Forward in IDE (separate from Vim jumps)
+nnoremap <C-h> <Action>(Back)
+nnoremap <C-l> <Action>(Forward)
 
-" Notes and Caveats:
-" Tabs map to JB saved layouts.
-" Not everything has been tested.
+" Hover / Documentation
+nmap K <Action>(QuickJavaDoc)
+nmap gK <Action>(ParameterInfo)
 
-" TODOs:
-" Jetbrains conflicts
-" Improve Todo-comments
-" Convert to a github project
-" which-key labels
-" Test every map.  sidy-by-side.
-" Compare all which-key popups
-" Consider:
-"   flash, grub-far, noice, trouble, mini.diff, oversear, copilotchat,
-"   dial, outline, md preview, harpoon, octo
+" Git Hunks (gitsigns-style)
+nmap ]c <Action>(VcsShowNextChangeMarker)
+nmap [c <Action>(VcsShowPrevChangeMarker)
+nmap <leader>gr <Action>(Vcs.RollbackChangedLines)
+nmap <leader>gp <Action>(Vcs.Push)
+nmap <leader>gu <Action>(Vcs.UpdateProject)
+nmap <leader>gd <Action>(Diff.ShowDiff)
+
+" Method navigation (nvim-treesitter-textobjects-style)
+nmap ]m <Action>(MethodDown)
+nmap [m <Action>(MethodUp)
+
+" Code folding (native Vim fold keys → IdeaVim folding)
+nmap zo <Action>(ExpandRegion)
+nmap zc <Action>(CollapseRegion)
+nmap zO <Action>(ExpandRegionRecursively)
+nmap zC <Action>(CollapseRegionRecursively)
+nmap zR <Action>(ExpandAllRegions)
+nmap zM <Action>(CollapseAllRegions)
+nmap za <Action>(ExpandCollapseToggleAction)
+
+" Bookmarks (marks-style)
+nmap mm <Action>(ToggleBookmark)
+nmap mM <Action>(ToggleBookmarkWithMnemonic)
+nmap ms <Action>(ShowBookmarks)
+nmap ]' <Action>(GotoNextBookmark)
+nmap [' <Action>(GotoPreviousBookmark)
+
+" Refactoring (additional shortcuts)
+nmap <leader>rm <Action>(ExtractMethod)
+nmap <leader>rv <Action>(IntroduceVariable)
+nmap <leader>rc <Action>(IntroduceConstant)
+nmap <leader>rf <Action>(IntroduceField)
+nmap <leader>rp <Action>(IntroduceParameter)
+nmap <leader>ri <Action>(Inline)
+nmap <leader>rs <Action>(ChangeSignature)
+nmap <leader>rR <Action>(Refactorings.QuickListPopupAction)
+nmap <leader>oi <Action>(OptimizeImports)
+
+" Hierarchy (LSP-style)
+nmap <leader>hi <Action>(TypeHierarchy)
+nmap <leader>hc <Action>(CallHierarchy)
+nmap <leader>hm <Action>(MethodHierarchy)
+nmap <leader>hs <Action>(FileStructurePopup)
+
+" Switch header ↔ source (C/C++, clangd-style)
+nmap <leader>ch <Action>(SwitchHeaderSource)
+
+" Usage highlighting (nvim-illuminate-style)
+nmap <leader>sH <Action>(HighlightUsagesInFile)
+
+" Next/Prev occurrence under caret
+nmap <A-n> <Action>(GotoNextElementUnderCaretUsage)
+nmap <A-p> <Action>(GotoPrevElementUnderCaretUsage)
+
+" Multi-occurrence selection (nvim-visual-multi-style via IdeaVim)
+nmap <C-n> <Action>(SelectNextOccurrence)
+xmap <C-n> <Action>(SelectNextOccurrence)
+nmap <C-x> <Action>(UnselectPreviousOccurrence)
+xmap <C-x> <Action>(UnselectPreviousOccurrence)
+nmap <C-A-n> <Action>(SelectAllOccurrences)
+xmap <C-A-n> <Action>(SelectAllOccurrences)
+
+" Surround (vim-surround already enabled via Plug above)
+" ys<motion><char>  →  add surround
+" ds<char>          →  delete surround
+" cs<old><new>      →  change surround
+
+" Macro replay (Neovim default)
+nnoremap Q @@
+
+" Reopen last closed tab
+nmap <leader>bR <Action>(ReopenClosedTab)
+
+" VCS quick popup
+nmap <leader>gv <Action>(Vcs.QuickListPopupAction)
+
+" Show file path
+nmap <leader>fp <Action>(ShowFilePath)
+
+" Jump to test / production
+nmap <leader>ct <Action>(GotoTest)
+
+" Save current file
+nmap <leader>w <Action>(SaveDocument)
+
+" New scratch file
+nmap <leader>ns <Action>(NewScratchFile)
