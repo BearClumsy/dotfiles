@@ -119,6 +119,8 @@ Plug 'justinmk/vim-sneak'
 set which-key
 " Extended matching.  A Neovim default plugin.
 set matchit
+" NERDTree-style hjkl navigation in Project Explorer
+set NERDTree
 
 " Key maps
 
@@ -340,9 +342,9 @@ nmap <leader>br <Action>(CloseAllToTheRight)
 " Neo-tree Keymaps
 
 " Buffer Explorer
-nmap <leader>be <Action>(ActivateProjectToolWindow)
+nmap <leader>e <Action>(ActivateProjectToolWindow)
 " Explorer NeoTree (Root Dir)
-nmap <leader>e <Action>(FileStructurePopup)
+nmap <leader>be <Action>(FileStructurePopup)
 " Explorer NeoTree (cwd)
 nmap <leader>E <Action>(SelectInProjectView)
 " Explorer NeoTree (Root Dir) (alternative)
@@ -629,3 +631,7 @@ nmap <leader>w <Action>(SaveDocument)
 
 " New scratch file
 nmap <leader>ns <Action>(NewScratchFile)
+
+" Quick peek / definition popup (Cmd+Y / gpd equivalent)
+nmap gpd <Action>(QuickImplementations)
+nmap gpi <Action>(QuickImplementations)
