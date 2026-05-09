@@ -132,13 +132,13 @@ set NERDTree
 " General Keymaps
 
 " Go to Left Window
-nmap <C-h> <C-w>h
+nmap <C-h> <Action>(ActivateProjectToolWindow)
 " Go to Lower Window
 nmap <C-j> <C-w>j
 " Go to Upper Window
 nmap <C-k> <C-w>k
 " Go to Right Window
-nmap <C-l> <C-w>l
+nmap <C-l> <Esc>
 " Increase Window Height
 nmap <C-Up> <Action>(IncrementWindowHeight)
 " Decrease Window Height
@@ -535,9 +535,9 @@ inoremap <C-W> <C-G>u<C-W>
 " Q isn't exactly the same.
 nnoremap Q @@
 
-" Back/Forward in IDE (separate from Vim jumps)
-nnoremap <C-h> <Action>(Back)
-nnoremap <C-l> <Action>(Forward)
+" Back/Forward in IDE (use <C-o> / <C-i> instead)
+" nnoremap <C-h> <Action>(Back)
+" nnoremap <C-l> <Action>(Forward)
 
 " Hover / Documentation
 nmap K <Action>(QuickJavaDoc)
