@@ -1,0 +1,9 @@
+<keymap version="1" name="vim-setup" parent="Mac OS X 10.5+">
+  <action id="EditorScrollToCenter" />
+  <action id="FocusEditor">
+    <keyboard-shortcut first-keystroke="escape" />
+    <keyboard-shortcut first-keystroke="ctrl l" />
+  </action>
+  <action id="NextTab" />
+  <action id="PreviousTab" />
+</keymap>
