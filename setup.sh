@@ -36,7 +36,7 @@ fi
 # --- 3. Install brew packages ---
 echo "Installing brew packages..."
 brew tap cormacrelf/tap
-brew install tmux neovim yazi fzf thefuck eza dark-notify jq bat lazygit
+brew install tmux neovim yazi fzf thefuck eza dark-notify jq bat lazygit lazydocker
 
 # --- 4. Install Nerd Font ---
 echo "Installing Hack Nerd Font..."

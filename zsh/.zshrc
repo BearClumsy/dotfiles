@@ -20,6 +20,7 @@ if [ "$GHOSTTY_USE_OMZ" = "1" ]; then
 
     # Source environment variables
     [ -f ~/.dotfiles/zsh/claude_config.zsh ] && source ~/.dotfiles/zsh/claude_config.zsh
+    [ -f ~/.dotfiles/zsh/alias.zsh ] && source ~/.dotfiles/zsh/alias.zsh
 
     # --- Aliases & Custom Functions ---
     # eza for a modern ls experience
