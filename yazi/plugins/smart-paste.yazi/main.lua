@@ -1,3 +1,5 @@
+local _active = false
+
 local get_ctx = ya.sync(function()
 	local cwd = tostring(cx.active.current.cwd)
 	local yanked = {}
@@ -9,8 +11,14 @@ end)
 
 return {
 	entry = function(_, args)
+		if _active then return end
+		_active = true
+
 		local ctx = get_ctx()
-		if #ctx.yanked == 0 then return end
+		if #ctx.yanked == 0 then
+			_active = false
+			return
+		end
 
 		local conflicts = {}
 		for _, url_str in ipairs(ctx.yanked) do
@@ -24,6 +32,7 @@ return {
 
 		if #conflicts == 0 then
 			ya.emit("paste", args)
+			_active = false
 			return
 		end
 
@@ -36,5 +45,7 @@ return {
 		if event == 1 and (value == "y" or value == "Y") then
 			ya.emit("paste", { force = true })
 		end
+
+		_active = false
 	end,
 }
