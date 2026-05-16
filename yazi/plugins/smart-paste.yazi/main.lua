@@ -73,11 +73,16 @@ return {
 			conflict_names[#conflict_names + 1] = c.name
 		end
 
+		local names_str = table.concat(conflict_names, ", ")
+		if #names_str > 30 then
+			names_str = names_str:sub(1, 27) .. "…"
+		end
+
 		local value, event = ya.input {
-			title = #conflicts
+			title = "(r)eplace / (c)opy / (s)kip — "
+				.. #conflicts
 				.. " conflict(s): "
-				.. table.concat(conflict_names, ", ")
-				.. " — (r)eplace / (c)opy / (s)kip",
+				.. names_str,
 			value = "",
 			pos = { "center", w = 70 },
 		}
