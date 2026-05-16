@@ -43,10 +43,6 @@ local function unique_copy_name(dir, name)
 	end
 end
 
-local function shell_quote(str)
-	return "'" .. str:gsub("'", "'\\''") .. "'"
-end
-
 return {
 	entry = function(_, args)
 		if _active then return end
@@ -88,17 +84,18 @@ return {
 
 		if event == 1 then
 			if value == "r" or value == "R" then
+				-- chmod -R +w destination before replacing so read-only files
+				-- (e.g. git pack objects inside tmux plugins) can be overwritten
+				for _, c in ipairs(conflicts) do
+					local dest = ctx.cwd .. "/" .. c.name
+					Command("chmod"):arg({ "-R", "+w", dest }):output()
+				end
 				ya.emit("paste", { force = true })
 			elseif value == "c" or value == "C" then
 				for _, c in ipairs(conflicts) do
 					local new_name = unique_copy_name(ctx.cwd, c.name)
 					local dest = ctx.cwd .. "/" .. new_name
-					-- ya.emit("shell") runs via yazi's task system (shows progress, async-safe)
-					ya.emit("shell", {
-						"cp -r " .. shell_quote(c.src) .. " " .. shell_quote(dest),
-						block = false,
-						orphan = false,
-					})
+					Command("cp"):arg({ "-r", c.src, dest }):output()
 				end
 				-- paste any non-conflicting yanked items normally
 				if #ctx.yanked > #conflicts then
