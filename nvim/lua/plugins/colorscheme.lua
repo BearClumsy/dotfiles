@@ -16,6 +16,7 @@ return {
     priority = 1000,
     opts = {
       flavour = "mocha", -- Default to dark variant (mocha)
+      transparent_background = true,
       background = {
         light = "latte",
         dark = "mocha",
