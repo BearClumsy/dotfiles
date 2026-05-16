@@ -73,18 +73,22 @@ return {
 			conflict_names[#conflict_names + 1] = c.name
 		end
 
-		local names_str = table.concat(conflict_names, ", ")
-		if #names_str > 30 then
-			names_str = names_str:sub(1, 27) .. "…"
+		-- Show all conflict names in a confirm dialog (supports multi-line body)
+		local confirmed = ya.confirm {
+			pos = { "center", w = 40, h = math.min(4 + #conflicts, 20) },
+			title = #conflicts .. " conflict(s) — continue?",
+			body = table.concat(conflict_names, "\n"),
+		}
+
+		if not confirmed then
+			_active = false
+			return
 		end
 
 		local value, event = ya.input {
-			title = "(r)eplace / (c)opy / (s)kip — "
-				.. #conflicts
-				.. " conflict(s): "
-				.. names_str,
+			title = "(r)eplace / (c)opy / (s)kip",
 			value = "",
-			pos = { "center", w = 70 },
+			pos = { "center", w = 36 },
 		}
 
 		if event == 1 then
