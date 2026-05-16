@@ -6,6 +6,13 @@
 vim.keymap.set("n", "<C-e>", "j<C-e>", { desc = "Scroll down without moving cursor" })
 vim.keymap.set("n", "<C-y>", "k<C-y>", { desc = "Scroll up without moving cursor" })
 
+-- Send delete/change to black hole register (don't pollute clipboard)
+vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete to black hole" })
+vim.keymap.set({ "n", "v" }, "D", '"_D', { desc = "Delete to end to black hole" })
+vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change to black hole" })
+vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end to black hole" })
+vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char to black hole" })
+
 -- Manual theme toggle keymap
 vim.keymap.set("n", "<leader>ut", function()
   if vim.o.background == "dark" then
