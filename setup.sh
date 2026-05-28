@@ -21,6 +21,11 @@ stow --target="$HOME/.config" .
 echo "Stowing ~/ packages..."
 stow --target="$HOME" zsh p10k idea
 
+echo "Symlinking lazygit config..."
+LAZYGIT_DIR="$HOME/Library/Application Support/lazygit"
+mkdir -p "$LAZYGIT_DIR"
+ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$LAZYGIT_DIR/config.yml"
+
 read -r -p "Set up VS Code config? [y/N] " reply
 if [[ "$reply" =~ ^[Yy]$ ]]; then
   echo "Symlinking VS Code config..."
@@ -36,7 +41,7 @@ fi
 # --- 3. Install brew packages ---
 echo "Installing brew packages..."
 brew tap cormacrelf/tap
-brew install tmux neovim fzf thefuck eza dark-notify jq bat lazygit lazydocker
+brew install tmux neovim fzf thefuck eza dark-notify jq bat lazygit lazydocker git-delta
 # yazi and its recommended dependencies (file previews, thumbnails, archive support)
 brew install ffmpegthumbnailer unar poppler fd ripgrep zoxide imagemagick exiftool
 brew install yazi

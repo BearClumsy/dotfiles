@@ -1,2 +1,8 @@
 os:
   editPreset: 'nvim-remote'
+customCommands:
+  - key: '<c-d>'
+    command: 'git diff -- {{.SelectedFile.Name}} | delta --side-by-side --dark --line-numbers --paging=never --width=$(tput cols) | less -Rc'
+    context: 'files'
+    description: 'Side-by-side diff with delta'
+    output: terminal
