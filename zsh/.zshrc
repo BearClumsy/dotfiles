@@ -13,7 +13,7 @@ if [ "$GHOSTTY_USE_OMZ" = "1" ]; then
     ZSH_THEME="powerlevel10k/powerlevel10k"
     
     # Plugins list (verified syntax)
-    plugins=(git z docker fzf thefuck zsh-autosuggestions history)
+    plugins=(git z fzf thefuck zsh-autosuggestions history)
 
     # Initialize Oh My Zsh
     source $ZSH/oh-my-zsh.sh
