@@ -113,8 +113,10 @@ set shortmess=filnxtToOF
 Plug 'tpope/vim-commentary'
 " s action, such as cs"' (replace " with '), ds" (unquote)
 Plug 'tpope/vim-surround'
-" similar to flash.nvim
-Plug 'justinmk/vim-sneak'
+" flash.nvim-style jump
+" Requires from JetBrains Marketplace: AceJump, IdeaVim-EasyMotion
+Plug 'easymotion/vim-easymotion'
+set easymotion
 " Enable the whichkey plugin, available on Jetbrains marketplace
 set which-key
 " Extended matching.  A Neovim default plugin.
@@ -534,6 +536,9 @@ inoremap <C-U> <C-G>u<C-U>
 inoremap <C-W> <C-G>u<C-W>
 " Q isn't exactly the same.
 nnoremap Q @@
+
+" flash.nvim-style jump: s + 2 chars → labeled jump targets
+nmap s <Plug>(easymotion-sn)
 
 " Back/Forward in IDE (use <C-o> / <C-i> instead)
 " nnoremap <C-h> <Action>(Back)
