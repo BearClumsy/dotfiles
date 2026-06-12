@@ -13,6 +13,33 @@ vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change to black hole" })
 vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end to black hole" })
 vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char to black hole" })
 
+-- Follow lazygit worktree switches back into Neovim.
+-- LAZYGIT_NEW_DIR_FILE is the official lazygit mechanism: lazygit writes the
+-- new working directory to this file when the user switches worktrees.
+if vim.fn.executable("lazygit") == 1 then
+  local function open_lazygit(cwd)
+    local new_dir_file = vim.fn.tempname()
+    Snacks.lazygit({
+      cwd = cwd,
+      env = { LAZYGIT_NEW_DIR_FILE = new_dir_file },
+      win = {
+        on_close = function()
+          local ok, lines = pcall(vim.fn.readfile, new_dir_file)
+          vim.fn.delete(new_dir_file)
+          if ok and lines and #lines > 0 then
+            local target = vim.trim(table.concat(lines, ""))
+            if target ~= "" and vim.fn.isdirectory(target) == 1 then
+              vim.cmd("cd " .. vim.fn.fnameescape(target))
+            end
+          end
+        end,
+      },
+    })
+  end
+  vim.keymap.set("n", "<leader>gg", function() open_lazygit(LazyVim.root.git()) end, { desc = "Lazygit (Root Dir)" })
+  vim.keymap.set("n", "<leader>gG", function() open_lazygit(nil) end, { desc = "Lazygit (cwd)" })
+end
+
 Snacks.toggle({
   name = "Auto Theme",
   get = function()
