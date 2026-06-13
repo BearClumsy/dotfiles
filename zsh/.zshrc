@@ -8,6 +8,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 if [ "$GHOSTTY_USE_OMZ" = "1" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+
     # Oh My Zsh Paths
     export ZSH="$HOME/.config/ghostty/oh-my-zsh"
     ZSH_THEME="powerlevel10k/powerlevel10k"
