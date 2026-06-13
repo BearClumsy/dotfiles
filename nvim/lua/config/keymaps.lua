@@ -36,7 +36,18 @@ if vim.fn.executable("lazygit") == 1 then
       },
     })
   end
-  vim.keymap.set("n", "<leader>gg", function() open_lazygit(LazyVim.root.git()) end, { desc = "Lazygit (Root Dir)" })
+  local function lazygit_root()
+    -- After a worktree switch, on_close updates vim.fn.getcwd() to the new worktree root.
+    -- LazyVim.root.git() uses the current buffer's path and still returns the old worktree root.
+    -- Prefer getcwd() when it's a git root itself (has .git dir or file); otherwise fall back.
+    local cwd = vim.fn.getcwd()
+    local marker = cwd .. "/.git"
+    if vim.fn.isdirectory(marker) == 1 or vim.fn.filereadable(marker) == 1 then
+      return cwd
+    end
+    return LazyVim.root.git()
+  end
+  vim.keymap.set("n", "<leader>gg", function() open_lazygit(lazygit_root()) end, { desc = "Lazygit (Root Dir)" })
   vim.keymap.set("n", "<leader>gG", function() open_lazygit(nil) end, { desc = "Lazygit (cwd)" })
 end
 
