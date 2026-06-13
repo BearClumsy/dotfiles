@@ -29,7 +29,17 @@ if vim.fn.executable("lazygit") == 1 then
           if ok and lines and #lines > 0 then
             local target = vim.trim(table.concat(lines, ""))
             if target ~= "" and vim.fn.isdirectory(target) == 1 then
-              vim.cmd("cd " .. vim.fn.fnameescape(target))
+              local switch_file = vim.env.NVIM_WORKTREE_SWITCH_FILE
+              if switch_file and switch_file ~= "" then
+                -- Shell wrapper will cd + reopen nvim after we quit
+                vim.fn.writefile({ target }, switch_file)
+                vim.schedule(function()
+                  pcall(vim.cmd, "wa")
+                  vim.cmd("qa")
+                end)
+              else
+                vim.cmd("cd " .. vim.fn.fnameescape(target))
+              end
             end
           end
         end,
