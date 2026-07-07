@@ -7,3 +7,5 @@ thefuck/__pycache__/
 **/__pycache__/
 *.pyc
 zsh/claude_config.zsh
+graphify-out/
+.claude/
