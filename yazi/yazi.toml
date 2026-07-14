@@ -1,0 +1,7 @@
+[opener]
+chrome = [
+  { run = 'open -a "Google Chrome" "$@"', orphan = true, desc = "Google Chrome" },
+]
+
+[open]
+prepend_rules = [{ url = "*.html", use = ["chrome", "open", "edit"] }]
