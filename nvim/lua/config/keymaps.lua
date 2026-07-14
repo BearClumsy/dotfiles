@@ -19,6 +19,10 @@ vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char to black hole" })
 if vim.fn.executable("lazygit") == 1 then
   local function open_lazygit(cwd)
     local new_dir_file = vim.fn.tempname()
+    -- lazygit writes LAZYGIT_NEW_DIR_FILE on every quit (its generic cd-on-exit
+    -- mechanism), not only when a worktree switch happened. Compare against the
+    -- starting dir so a plain `q` doesn't trigger the qa/reopen flow below.
+    local start_dir = vim.fn.fnamemodify(cwd or vim.fn.getcwd(), ":p:h")
     Snacks.lazygit({
       cwd = cwd,
       env = { LAZYGIT_NEW_DIR_FILE = new_dir_file },
@@ -28,7 +32,7 @@ if vim.fn.executable("lazygit") == 1 then
           vim.fn.delete(new_dir_file)
           if ok and lines and #lines > 0 then
             local target = vim.trim(table.concat(lines, ""))
-            if target ~= "" and vim.fn.isdirectory(target) == 1 then
+            if target ~= "" and vim.fn.isdirectory(target) == 1 and vim.fn.fnamemodify(target, ":p:h") ~= start_dir then
               local switch_file = vim.env.NVIM_WORKTREE_SWITCH_FILE
               if switch_file and switch_file ~= "" then
                 -- Shell wrapper will cd + reopen nvim after we quit
