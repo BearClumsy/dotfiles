@@ -3,7 +3,7 @@ env = GHOSTTY_USE_OMZ=1
 
 font-family = "Hack Nerd Font"
 font-size = 18
-background-opacity = 0.7
+background-opacity = 0.9
 
 theme = dark:Catppuccin Mocha,light:Catppuccin Latte
 custom-shader = shaders/cursor-sweep.glsl
