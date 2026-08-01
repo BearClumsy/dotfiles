@@ -41,7 +41,7 @@ fi
 # --- 3. Install brew packages ---
 echo "Installing brew packages..."
 brew tap cormacrelf/tap
-brew install tmux neovim fzf thefuck eza dark-notify jq bat lazygit lazydocker git-delta
+brew install tmux neovim fzf thefuck eza dark-notify jq bat lazygit lazydocker git-delta btop
 # yazi and its recommended dependencies (file previews, thumbnails, archive support)
 brew install ffmpegthumbnailer unar poppler fd ripgrep zoxide imagemagick exiftool
 brew install yazi

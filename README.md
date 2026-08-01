@@ -64,7 +64,7 @@ bash ~/.dotfiles/setup.sh
 
 `setup.sh` automatically handles everything:
 
-- Installs all brew packages (`tmux`, `neovim`, `yazi`, `fzf`, `thefuck`, `eza`, `dark-notify`, `jq`, `bat`, `lazygit`)
+- Installs all brew packages (`tmux`, `neovim`, `yazi`, `fzf`, `thefuck`, `eza`, `dark-notify`, `jq`, `bat`, `lazygit`, `btop`)
 - Installs Hack Nerd Font
 - Creates all symlinks via stow
 - Installs Oh My Zsh, Powerlevel10k, zsh-autosuggestions
