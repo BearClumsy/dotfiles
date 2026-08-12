@@ -12,6 +12,13 @@ return {
               },
             },
           },
+          -- jdtls defaults both of these to false server-side and returns an
+          -- empty result for every textDocument/signatureHelp request until
+          -- they are set, which surfaces as "No signature help available".
+          signatureHelp = {
+            enabled = true,
+            description = { enabled = true },
+          },
         },
       },
       -- jdtls keeps its own compiled model of the project separate from file
@@ -22,6 +29,25 @@ return {
           { buffer = args.buf, desc = "Update Project Config" })
         vim.keymap.set("n", "<leader>cC", "<cmd>JdtCompile incremental<cr>",
           { buffer = args.buf, desc = "Compile (Incremental)" })
+
+        -- jdtls looks for the enclosing "(" by scanning backwards from
+        -- offset - 1, so a cursor parked *on* the "(" never sees it and the
+        -- scan runs left into the enclosing brace. Nudge one column right for
+        -- the request, then put the cursor back. Scheduled so this lands after
+        -- LazyVim's own buffer-local gK from its LspAttach handler.
+        vim.schedule(function()
+          vim.keymap.set("n", "gK", function()
+            local line = vim.api.nvim_get_current_line()
+            local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+            if line:sub(col + 1, col + 1) == "(" then
+              vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+              vim.lsp.buf.signature_help()
+              vim.api.nvim_win_set_cursor(0, { row, col })
+            else
+              vim.lsp.buf.signature_help()
+            end
+          end, { buffer = args.buf, desc = "Signature Help" })
+        end)
       end,
     },
   },
