@@ -77,3 +77,15 @@ lg() {
   fi
   rm -f "$new_dir_file"
 }
+
+# --- fzf ---
+# fzf has no preview by default; enable it for the CTRL-T (files) and ALT-C (dirs) widgets only.
+# Bare `fzf` stays preview-free so piping arbitrary lists into it still works.
+export FZF_CTRL_T_OPTS="
+  --preview '[ -d {} ] && eza --tree --level=2 --color=always {} || bat --color=always --style=numbers --line-range=:500 {}'
+  --preview-window 'right:60%:wrap'
+  --bind 'ctrl-/:toggle-preview'"
+
+export FZF_ALT_C_OPTS="
+  --preview 'eza --tree --level=2 --color=always {}'
+  --preview-window 'right:60%:wrap'"
