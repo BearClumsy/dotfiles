@@ -30,12 +30,27 @@ return {
         vim.keymap.set("n", "<leader>cC", "<cmd>JdtCompile incremental<cr>",
           { buffer = args.buf, desc = "Compile (Incremental)" })
 
+        -- <leader>td is neotest's "Debug Nearest", but no Java neotest adapter
+        -- is installed, so it always reports "No tests found". Point it at the
+        -- jdtls equivalent, which launches through java-debug-adapter.
+        local ok, jdtls_dap = pcall(require, "jdtls.dap")
+        if ok then
+          vim.keymap.set("n", "<leader>td", function()
+            jdtls_dap.test_nearest_method()
+          end, { buffer = args.buf, desc = "Debug Nearest Test" })
+        end
+
         -- jdtls looks for the enclosing "(" by scanning backwards from
         -- offset - 1, so a cursor parked *on* the "(" never sees it and the
         -- scan runs left into the enclosing brace. Nudge one column right for
         -- the request, then put the cursor back. Scheduled so this lands after
         -- LazyVim's own buffer-local gK from its LspAttach handler.
         vim.schedule(function()
+          -- jdtls also attaches to short-lived buffers (e.g. the ones opened
+          -- during a dap test run), which can be gone by the time this runs.
+          if not vim.api.nvim_buf_is_valid(args.buf) then
+            return
+          end
           vim.keymap.set("n", "gK", function()
             local line = vim.api.nvim_get_current_line()
             local row, col = unpack(vim.api.nvim_win_get_cursor(0))
