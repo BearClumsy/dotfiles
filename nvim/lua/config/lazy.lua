@@ -31,6 +31,10 @@ require("lazy").setup({
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   install = { colorscheme = { "tokyonight", "habamax" } },
+  -- lazy.nvim's floats (`:Lazy`, `:LazyExtras`) pass an explicit `border = "none"` to
+  -- nvim_open_win, so they never fall back to `vim.o.winborder`. Match the rounded border
+  -- used everywhere else.
+  ui = { border = "rounded" },
   checker = {
     enabled = true, -- check for plugin updates periodically
     notify = false, -- notify on update
