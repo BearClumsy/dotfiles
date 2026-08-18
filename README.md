@@ -31,7 +31,7 @@ Personal macOS dotfiles managed with [GNU Stow](https://www.gnu.org/software/sto
 ## What's included
 
 | Package | Config location | Description |
-|---|---|---|
+| --- | --- | --- |
 | `tmux` | `~/.config/tmux` | Tmux with Catppuccin theme, auto dark/light switching |
 | `nvim` | `~/.config/nvim` | Neovim (LazyVim-based) with Catppuccin theme |
 | `ghostty` | `~/.config/ghostty` | Ghostty terminal config + Oh My Zsh |

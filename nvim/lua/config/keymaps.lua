@@ -75,3 +75,5 @@ Snacks.toggle({
     if state then t.start() else t.stop() end
   end,
 }):map("<leader>um")
+
+vim.keymap.set("n", "<leader>uM", "<cmd>RenderMarkdown toggle<cr>", { desc = "Toggle Markdown Render" })
