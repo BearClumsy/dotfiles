@@ -7,6 +7,15 @@
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
+-- Disable markdownlint-cli2 diagnostics without touching marksman LSP
+-- diagnostics on the same buffers
+do
+  local lint_ok, lint = pcall(require, "lint")
+  if lint_ok then
+    vim.diagnostic.enable(false, { ns_id = lint.get_namespace("markdownlint-cli2") })
+  end
+end
+
 -- Persist dap-ui panel and explorer sidebar sizes across sessions
 do
   local win_size = require("config.win-size")
