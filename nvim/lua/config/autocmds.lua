@@ -117,3 +117,6 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
     end)
   end,
 })
+
+-- Give new Java files a package declaration + class skeleton, like IntelliJ
+require("config.java-new-file").setup()
