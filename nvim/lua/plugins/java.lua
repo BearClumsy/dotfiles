@@ -40,6 +40,42 @@ return {
           end, { buffer = args.buf, desc = "Debug Nearest Test" })
         end
 
+        -- jdtls.dap.setup_dap_main_class_configs() only scans for main
+        -- classes once, when jdtls attaches to a buffer, so a main method
+        -- added/edited afterward doesn't show up in <leader>dc's picker
+        -- until the scan is re-run. Refresh it here and, if the current
+        -- buffer's class matches one of the discovered configs, launch it
+        -- directly instead of going through the picker.
+        vim.keymap.set("n", "<leader>dm", function()
+          require("jdtls.dap").setup_dap_main_class_configs()
+
+          local fname = vim.api.nvim_buf_get_name(args.buf)
+          local class_name = vim.fn.fnamemodify(fname, ":t:r")
+          local package_name
+          for _, line in ipairs(vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)) do
+            package_name = line:match("^package%s+([%w_.]+)%s*;")
+            if package_name then
+              break
+            end
+          end
+          local fqcn = package_name and (package_name .. "." .. class_name) or class_name
+
+          local dap = require("dap")
+          local config
+          for _, c in ipairs(dap.configurations.java or {}) do
+            if c.mainClass == fqcn then
+              config = c
+              break
+            end
+          end
+
+          if config then
+            dap.run(config)
+          else
+            dap.continue()
+          end
+        end, { buffer = args.buf, desc = "Run/Debug Main Class" })
+
         -- jdtls looks for the enclosing "(" by scanning backwards from
         -- offset - 1, so a cursor parked *on* the "(" never sees it and the
         -- scan runs left into the enclosing brace. Nudge one column right for
