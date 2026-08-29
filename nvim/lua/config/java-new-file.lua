@@ -109,10 +109,12 @@ function M.fill(buf)
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
 
-  -- Neovim clears 'modified' once the BufNewFile/BufReadPost autocmds are done,
-  -- treating whatever they wrote as part of loading the file. Without this the
-  -- template would be dropped by a plain `:q` with no prompt. Nothing is written
-  -- to disk, so `u` still gets the empty file back and `:q!` throws it away.
+  -- The fill runs a tick after BufNewFile/BufReadPost (see setup()), so the
+  -- buffer is already 'modified' by the time we get here on the BufReadPost
+  -- path. On BufNewFile, Neovim still clears 'modified' when the load-time
+  -- autocmds finish, so keep setting it -- otherwise the template would be
+  -- dropped by a plain `:q` with no prompt. Nothing is written to disk, so `u`
+  -- still gets the empty file back and `:q!` throws it away.
   vim.bo[buf].modified = true
 
   -- Land inside the class body, like IntelliJ does. `startinsert!` jumps to the
@@ -125,25 +127,42 @@ function M.fill(buf)
   end
 end
 
+-- The single empty line that marks a buffer we should fill.
+local function is_blank(buf)
+  return vim.api.nvim_buf_is_valid(buf)
+    and vim.api.nvim_buf_is_loaded(buf)
+    and vim.bo[buf].buftype == ""
+    and vim.bo[buf].modifiable
+    and not vim.bo[buf].readonly
+    and vim.api.nvim_buf_line_count(buf) == 1
+    and vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == ""
+end
+
 function M.setup()
   -- Snacks explorer's "add file" writes a zero-byte file to disk, so opening it
   -- fires BufReadPost, not BufNewFile. Both events run the same emptiness check,
   -- which also makes re-opening a file that already has content a no-op.
+  --
+  -- The fill is deferred one tick because jdtls's "Create class" code action
+  -- applies its WorkspaceEdit synchronously: it creates a zero-byte file, loads
+  -- it (firing our BufReadPost against an empty buffer), THEN inserts its own
+  -- package + type-comment + class template. Running on `vim.schedule` lets that
+  -- edit land first; the re-check then sees a non-empty buffer and bails instead
+  -- of stacking our skeleton on top of jdtls's. The explorer path has no second
+  -- writer, so the buffer is still blank a tick later and we fill it as before.
   vim.api.nvim_create_autocmd({ "BufNewFile", "BufReadPost" }, {
     group = vim.api.nvim_create_augroup("java_new_file", { clear = true }),
     pattern = "*.java",
     callback = function(ev)
       local buf = ev.buf
-      if vim.bo[buf].buftype ~= "" or not vim.bo[buf].modifiable or vim.bo[buf].readonly then
+      if not is_blank(buf) then
         return
       end
-      if vim.api.nvim_buf_line_count(buf) ~= 1 then
-        return
-      end
-      if vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] ~= "" then
-        return
-      end
-      M.fill(buf)
+      vim.schedule(function()
+        if is_blank(buf) then
+          M.fill(buf)
+        end
+      end)
     end,
   })
 end
