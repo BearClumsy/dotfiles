@@ -1,5 +1,13 @@
 alias lzd="lazydocker"
 
+# Mirror the TechMemory vault contents into the Obsidian OneDrive root.
+# rsync -a copies only new/changed files (size+mtime differ); --delete removes destination files
+# that no longer exist in the source; -i prints one line per add/update/delete. The anchored
+# --exclude=/TechMemory/ stops --delete from wiping the source folder, which itself lives inside
+# the destination. The retry loop rides out OneDrive "Operation timed out" errors while Files
+# On-Demand hydrates cloud-only files in the background.
+alias techmemory-sync='until rsync -ai --delete --exclude=.DS_Store --exclude=/TechMemory/ "$HOME/OneDrive/Obsidian/TechMemory/" "$HOME/OneDrive/Obsidian/"; do echo "rsync failed (OneDrive likely still downloading) — retrying in 10s…"; sleep 10; done'
+
 OBSIDIAN_VAULT="$HOME/Documents/Obsidian Vault"
 
 # Open (or create) a meeting note for today, then optionally summarize with Claude
