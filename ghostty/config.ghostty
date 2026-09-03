@@ -7,3 +7,28 @@ background-opacity = 0.9
 
 theme = dark:Catppuccin Mocha,light:Catppuccin Latte
 custom-shader = shaders/cursor-sweep.glsl
+
+# --- disable default split / tab / window shortcuts (tmux handles these) ---
+keybind = cmd+d=unbind
+keybind = cmd+shift+d=unbind
+keybind = cmd+t=unbind
+keybind = cmd+w=unbind
+keybind = cmd+shift+w=unbind
+keybind = cmd+n=unbind
+# goto_tab: each number has both a logical (cmd+one) and physical (cmd+digit_1) binding
+keybind = cmd+one=unbind
+keybind = cmd+digit_1=unbind
+keybind = cmd+two=unbind
+keybind = cmd+digit_2=unbind
+keybind = cmd+three=unbind
+keybind = cmd+digit_3=unbind
+keybind = cmd+four=unbind
+keybind = cmd+digit_4=unbind
+keybind = cmd+five=unbind
+keybind = cmd+digit_5=unbind
+keybind = cmd+six=unbind
+keybind = cmd+digit_6=unbind
+keybind = cmd+seven=unbind
+keybind = cmd+digit_7=unbind
+keybind = cmd+eight=unbind
+keybind = cmd+digit_8=unbind
