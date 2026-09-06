@@ -21,6 +21,24 @@ local function cur_tab_wins()
   return vim.api.nvim_tabpage_list_wins(0)
 end
 
+-- nvim-dap-ui keeps watch expressions in a module-local list for the whole nvim
+-- session; nothing clears it between debug runs. Drop them all so a new session
+-- starts with an empty Watches panel (IntelliJ re-runs the same way).
+local function clear_watches()
+  local ok, dapui = pcall(require, "dapui")
+  if not ok then
+    return
+  end
+  local w = dapui.elements.watches
+  if not w then
+    return
+  end
+  local list = w.get() or {}
+  for i = #list, 1, -1 do
+    pcall(w.remove, i)
+  end
+end
+
 local function dapui_windows_open()
   for _, win in ipairs(cur_tab_wins()) do
     local ok, ft = pcall(function()
@@ -85,11 +103,14 @@ function M.setup()
     end
   end)
 
-  -- 2. Snapshot the layout right before dap-ui auto-opens on session start.
+  -- 2. Snapshot the layout right before dap-ui auto-opens on session start, and
+  --    drop watch expressions carried over from the previous session (dap-ui now
+  --    stays open, so its watches list would otherwise pile up run after run).
   --    before.* runs ahead of LazyVim's after.event_initialized open hook.
   LazyVim.on_load("nvim-dap", function()
     require("dap").listeners.before.event_initialized["win_restore"] = function()
       M.snapshot()
+      clear_watches()
     end
   end)
 
