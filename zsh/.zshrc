@@ -58,3 +58,4 @@ else
     autoload -Uz compinit && compinit
     PROMPT='%n@%m %1~ %# '
 fi
+export PATH="/opt/homebrew/opt/openjdk@25/bin:$PATH"

@@ -20,12 +20,30 @@ local function load()
   return cache
 end
 
+-- Sidebar-style keys must never claim more than this share of the screen. A
+-- larger value (e.g. left over from the old dap-ui resize bug) is treated as
+-- corruption: never read back, never written.
+local clamped_keys = { explorer = true, dapui_sidebar = true }
+
+local function too_wide(key, value)
+  return clamped_keys[key]
+    and type(value) == "number"
+    and value > math.floor(vim.o.columns * 0.45)
+end
+
 function M.get(key, default)
   local tbl = load()
-  return tbl[key] or default
+  local v = tbl[key]
+  if v == nil or too_wide(key, v) then
+    return default
+  end
+  return v
 end
 
 function M.save(key, value)
+  if too_wide(key, value) then
+    return
+  end
   local tbl = load()
   if tbl[key] == value then
     return

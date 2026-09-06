@@ -31,6 +31,35 @@ do
     dapui_console = true,
   }
 
+  -- A debug session opening/closing fires a storm of WinResized events; debounce
+  -- the disk writes so only the size a panel settles on is persisted.
+  local pending = {}
+  local function save_soon(key, value)
+    if pending[key] then
+      pending[key]:stop()
+    end
+    pending[key] = vim.defer_fn(function()
+      pending[key] = nil
+      win_size.save(key, value)
+    end, 150)
+  end
+
+  -- True while a dap session is live or any dap-ui window is on screen. dap-ui
+  -- now stays open after the program exits, so we key off the windows too.
+  local function dap_ui_active()
+    local dap = package.loaded.dap
+    if dap and dap.session ~= nil and dap.session() then
+      return true
+    end
+    for _, w in ipairs(vim.api.nvim_list_wins()) do
+      local ok, ft = pcall(function() return vim.bo[vim.api.nvim_win_get_buf(w)].filetype end)
+      if ok and ft ~= nil and (ft:match("^dapui_") or ft == "dap-repl") then
+        return true
+      end
+    end
+    return false
+  end
+
   vim.api.nvim_create_autocmd("WinResized", {
     group = vim.api.nvim_create_augroup("win_size_memory", { clear = true }),
     callback = function()
@@ -39,10 +68,10 @@ do
           local ok, ft = pcall(function() return vim.bo[vim.api.nvim_win_get_buf(win)].filetype end)
           ft = ok and ft or nil
           if dapui_sidebar_fts[ft] then
-            win_size.save("dapui_sidebar", vim.api.nvim_win_get_width(win))
+            save_soon("dapui_sidebar", vim.api.nvim_win_get_width(win))
           elseif dapui_bottom_fts[ft] then
-            win_size.save("dapui_bottom", vim.api.nvim_win_get_height(win))
-          elseif ft == "snacks_picker_list" then
+            save_soon("dapui_bottom", vim.api.nvim_win_get_height(win))
+          elseif ft == "snacks_picker_list" and not dap_ui_active() then
             local get_ok, pickers = pcall(function() return Snacks.picker.get({ source = "explorer" }) end)
             if get_ok and pickers then
               for _, picker in ipairs(pickers) do
@@ -221,3 +250,7 @@ vim.api.nvim_create_autocmd("BufWinEnter", {
 
 -- Give new Java files a package declaration + class skeleton, like IntelliJ
 require("config.java-new-file").setup()
+
+-- Keep dap-ui open after the program stops (IntelliJ-style) and restore the
+-- pre-debug window layout when it is closed manually.
+require("config.dap-win-restore").setup()

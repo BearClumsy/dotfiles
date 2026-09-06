@@ -13,6 +13,18 @@ return {
   },
   {
     "rcarriga/nvim-dap-ui",
+    -- stylua: ignore
+    keys = {
+      -- Snapshot the pre-debug window layout before dap-ui opens so a manual
+      -- close restores it. See config/dap-win-restore (also strips the auto-close
+      -- on session end -- dap-ui stays open, IntelliJ-style).
+      { "<leader>du", function()
+        local wr = require("config.dap-win-restore")
+        wr.snapshot()
+        require("dapui").toggle({})
+        vim.schedule(wr.restore)
+      end, desc = "Dap UI" },
+    },
     opts = function(_, opts)
       local win_size = require("config.win-size")
       opts.layouts = {

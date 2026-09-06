@@ -8,3 +8,9 @@ vim.opt.winblend = 0 -- disable float window blend
 -- Fallback border for floats that don't set their own. Snacks picker resolves its
 -- `border = true` through this too, so keep it "rounded" to match the picker.
 vim.opt.winborder = "rounded"
+
+-- Don't re-equalize every window when a split opens or closes. nvim-dap-ui opens
+-- and closes several panels per debug session, and auto-equalizing each time
+-- shoves the explorer around. New splits carve from the current window instead;
+-- `<C-w>=` still balances on demand.
+vim.opt.equalalways = false
