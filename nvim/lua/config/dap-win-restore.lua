@@ -17,6 +17,15 @@ local function is_dap_ft(ft)
   return ft ~= nil and (ft:match("^dapui_") ~= nil or ft == "dap-repl")
 end
 
+-- The window (in the current tabpage) currently displaying `buf`, or nil.
+local function win_showing(buf)
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf then
+      return win
+    end
+  end
+end
+
 local function cur_tab_wins()
   return vim.api.nvim_tabpage_list_wins(0)
 end
@@ -82,8 +91,42 @@ function M.setup()
   --    the auto-open a full rebuild.
   LazyVim.on_load("nvim-dap-ui", function()
     local dap = require("dap")
+    local dapui = require("dapui")
     dap.listeners.before.event_terminated["dapui_config"] = nil
     dap.listeners.before.event_exited["dapui_config"] = nil
+
+    -- nvim-dap-ui's console element hands nvim-dap only a bufnr (no window), so
+    -- the debuggee PTY is created at the `vim.o.columns` fallback and then races
+    -- the dap-ui layout resize -- with `equalalways = false` a fast-exiting
+    -- program flushes all its output while the PTY is still stuck at the width
+    -- of a transient narrow split, and libvterm never reflows it. Return the
+    -- live console window too so `termopen` sizes the PTY correctly up front;
+    -- falls back to buffer-only (today's behaviour) when the window isn't open.
+    dap.defaults.fallback.terminal_win_cmd = function()
+      local buf = dapui.elements.console.buffer()
+      return buf, win_showing(buf)
+    end
+
+    -- Belt-and-suspenders: once the layout has settled, snap the PTY to the
+    -- console window's real size (covers slower programs and post-open resizes).
+    dap.listeners.after.event_initialized["dap_term_width"] = function(session)
+      vim.defer_fn(function()
+        local buf = session and session.term_buf
+        if not (buf and vim.api.nvim_buf_is_valid(buf)) then
+          return
+        end
+        local chan = vim.b[buf].terminal_job_id
+        local win = win_showing(buf)
+        if chan and win then
+          pcall(
+            vim.fn.jobresize,
+            chan,
+            vim.api.nvim_win_get_width(win),
+            vim.api.nvim_win_get_height(win)
+          )
+        end
+      end, 150)
+    end
 
     -- dap-ui is no longer closed between sessions, so a second `<leader>dm`
     -- finds the layout already open -- and WindowLayout:open() early-returns in
@@ -92,7 +135,6 @@ function M.setup()
     -- recreates the windows against the new session. Snapshot the sizes across
     -- that close/open so the editor window doesn't drift on every run.
     dap.listeners.after.event_initialized["dapui_config"] = function()
-      local dapui = require("dapui")
       local rebuilding = dapui_windows_open()
       local sizes = rebuilding and vim.fn.winrestcmd() or nil
       dapui.close()

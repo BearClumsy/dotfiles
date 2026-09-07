@@ -39,7 +39,12 @@ return {
           position = "left",
         },
         {
-          elements = { "repl", "console" },
+          -- Tilt the bottom tray toward the console: the repl only hosts the
+          -- debug control buttons here, so the debuggee output gets the room.
+          elements = {
+            { id = "repl", size = 0.35 },
+            { id = "console", size = 0.65 },
+          },
           size = win_size.get("dapui_bottom", 10),
           position = "bottom",
         },

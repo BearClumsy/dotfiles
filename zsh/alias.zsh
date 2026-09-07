@@ -1,12 +1,11 @@
 alias lzd="lazydocker"
 
-# Mirror the TechMemory vault contents into the Obsidian OneDrive root.
+# One-way mirror: the live iCloud Obsidian vault (what Obsidian actually edits) -> OneDrive backup.
 # rsync -a copies only new/changed files (size+mtime differ); --delete removes destination files
-# that no longer exist in the source; -i prints one line per add/update/delete. The anchored
-# --exclude=/TechMemory/ stops --delete from wiping the source folder, which itself lives inside
-# the destination. The retry loop rides out OneDrive "Operation timed out" errors while Files
-# On-Demand hydrates cloud-only files in the background.
-alias techmemory-sync='until rsync -ai --delete --exclude=.DS_Store --exclude=/TechMemory/ "$HOME/OneDrive/Obsidian/TechMemory/" "$HOME/OneDrive/Obsidian/"; do echo "rsync failed (OneDrive likely still downloading) — retrying in 10s…"; sleep 10; done'
+# that no longer exist in the source; -i prints one line per add/update/delete. workspace*.json is
+# device-local UI state that churns constantly, so it's excluded. The retry loop rides out OneDrive
+# "Operation timed out" errors while Files On-Demand hydrates cloud-only files in the background.
+alias techmemory-sync='until rsync -ai --delete --exclude=.DS_Store --exclude=".obsidian/workspace*.json" --exclude=".trash/" "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/TechMemory/" "$HOME/OneDrive/Obsidian/TechMemory/"; do echo "rsync failed (OneDrive likely still downloading) — retrying in 10s…"; sleep 10; done'
 
 OBSIDIAN_VAULT="$HOME/Documents/Obsidian Vault"
 
