@@ -39,6 +39,13 @@ if vim.fn.executable("lazygit") == 1 then
                 vim.fn.writefile({ target }, switch_file)
                 vim.schedule(function()
                   pcall(vim.cmd, "wa")
+                  -- Move the running instance so tmux's pane_current_path (polled
+                  -- from the foreground process cwd) shows the new worktree before
+                  -- the shell wrapper cd's + reopens nvim.
+                  pcall(vim.cmd, "cd " .. vim.fn.fnameescape(target))
+                  if vim.env.TMUX and vim.env.TMUX ~= "" then
+                    pcall(vim.fn.system, { "tmux", "refresh-client", "-S" })
+                  end
                   vim.cmd("qa")
                 end)
               else
