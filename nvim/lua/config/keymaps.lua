@@ -13,6 +13,16 @@ vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change to black hole" })
 vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end to black hole" })
 vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char to black hole" })
 
+-- Override LazyVim's default single-line <A-j>/<A-k> move with a treesitter-aware
+-- swap: moves the whole function under the cursor past its sibling in one step,
+-- instead of shifting it line by line into the neighboring function's body.
+vim.keymap.set("n", "<A-j>", function()
+  require("nvim-treesitter-textobjects.swap").swap_next("@function.outer")
+end, { desc = "Swap function with next" })
+vim.keymap.set("n", "<A-k>", function()
+  require("nvim-treesitter-textobjects.swap").swap_previous("@function.outer")
+end, { desc = "Swap function with previous" })
+
 -- `dm` opens a which-key popup (same style as `'`/`` ` ``'s marks list) to pick
 -- a mark and delete it, instead of jumping to it. Registered on mode "o" (not
 -- as a separate "dm" keymap) because which-key's own operator-pending hint
