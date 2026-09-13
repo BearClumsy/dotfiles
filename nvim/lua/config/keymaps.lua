@@ -13,6 +13,50 @@ vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change to black hole" })
 vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end to black hole" })
 vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete char to black hole" })
 
+-- `dm` opens a which-key popup (same style as `'`/`` ` ``'s marks list) to pick
+-- a mark and delete it, instead of jumping to it. Registered on mode "o" (not
+-- as a separate "dm" keymap) because which-key's own operator-pending hint
+-- popup takes over key handling the instant `d` is pressed - a plain `dm`
+-- mapping never gets a chance to fire. `vim.v.operator` scopes this to `d`
+-- specifically, so `cm`/`ym` etc. fall through to their normal (no-op) behavior.
+require("which-key").add({
+  {
+    "m",
+    mode = "o",
+    desc = "Delete mark",
+    expand = function()
+      if vim.v.operator ~= "d" then
+        return {}
+      end
+      local buf = vim.api.nvim_get_current_buf()
+      local marks = {}
+      vim.list_extend(marks, vim.fn.getmarklist(buf))
+      vim.list_extend(marks, vim.fn.getmarklist())
+      local items = {}
+      for _, mark in ipairs(marks) do
+        local key = mark.mark:sub(2, 2)
+        if key:match("^[%a%d]$") then
+          local lnum = mark.pos[2]
+          local line = (mark.pos[1] and mark.pos[1] ~= 0)
+              and vim.api.nvim_buf_get_lines(mark.pos[1], lnum - 1, lnum, false)[1]
+            or mark.file
+          table.insert(items, {
+            key,
+            function()
+              vim.cmd("delmarks " .. key)
+              -- The real `d` operator this hijacked is still pending (we never gave
+              -- it a motion); cancel it so it doesn't leak into the next keystroke.
+              vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+            end,
+            desc = lnum .. ": " .. vim.trim(line or ""),
+          })
+        end
+      end
+      return items
+    end,
+  },
+})
+
 -- Follow lazygit worktree switches back into Neovim.
 -- LAZYGIT_NEW_DIR_FILE is the official lazygit mechanism: lazygit writes the
 -- new working directory to this file when the user switches worktrees.
