@@ -2,7 +2,7 @@ command = zsh
 env = GHOSTTY_USE_OMZ=1
 
 font-family = "Hack Nerd Font"
-font-size = 18
+font-size = 20
 background-opacity = 0.9
 macos-option-as-alt = right
 
