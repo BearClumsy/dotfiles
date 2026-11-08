@@ -4,6 +4,7 @@
 --ignore=zsh
 --ignore=p10k
 --ignore=idea
+--ignore=^pi
 --ignore=setup.sh
 --ignore=.claude
 --ignore=screenshots

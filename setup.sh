@@ -26,6 +26,16 @@ LAZYGIT_DIR="$HOME/Library/Application Support/lazygit"
 mkdir -p "$LAZYGIT_DIR"
 ln -sf "$DOTFILES_DIR/lazygit/config.yml" "$LAZYGIT_DIR/config.yml"
 
+echo "Symlinking Pi tmux extension..."
+mkdir -p "$HOME/.pi/agent/extensions"
+ln -sf "$DOTFILES_DIR/tmux/pi-tmux-notify.ts" "$HOME/.pi/agent/extensions/pi-tmux-notify.ts"
+
+# Linked per file, not stowed: stow would fold ~/.pi into a directory symlink
+# on a fresh machine, and Pi's auth, sessions and binaries would land in the repo.
+echo "Symlinking Pi config..."
+ln -sf "$DOTFILES_DIR/pi/models.json"   "$HOME/.pi/agent/models.json"
+ln -sf "$DOTFILES_DIR/pi/settings.json" "$HOME/.pi/agent/settings.json"
+
 read -r -p "Set up VS Code config? [y/N] " reply
 if [[ "$reply" =~ ^[Yy]$ ]]; then
   echo "Symlinking VS Code config..."
@@ -45,6 +55,8 @@ brew install tmux neovim fzf thefuck eza dark-notify jq bat lazygit lazydocker g
 # yazi and its recommended dependencies (file previews, thumbnails, archive support)
 brew install ffmpegthumbnailer unar poppler fd ripgrep zoxide imagemagick exiftool
 brew install yazi
+# node is required by the Pi installer (>= 22.19, with npm)
+brew install node ollama
 
 # --- 4. Install Nerd Font ---
 echo "Installing Hack Nerd Font..."
@@ -82,6 +94,36 @@ if [ ! -d "$HOME/.config/tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/plugins/tpm"
 else
   echo "TPM already installed, skipping."
+fi
+
+# --- 9. Install Pi agent ---
+# Must be on PATH first, or the installer offers to append to ~/.zshrc, which is tracked here
+export PATH="$HOME/.local/bin:$PATH"
+if [ ! -x "$HOME/.pi/agent/bin/pi" ]; then
+  echo "Installing Pi agent..."
+  # Non-TTY stdout skips the installer's "Start pi now?" prompt
+  (set -o pipefail; curl -fsSL https://pi.dev/install.sh | sh | cat)
+else
+  echo "Pi agent already installed, skipping."
+fi
+
+# --- 10. Pull the local Ollama model ---
+# Uses a temporary server: `brew services start` would register Ollama to run at every login.
+OLLAMA_MODEL="qwen3.5:9b"
+OLLAMA_TEMP_PID=""
+trap '[ -z "$OLLAMA_TEMP_PID" ] || kill "$OLLAMA_TEMP_PID"' EXIT
+
+if ! ollama list &>/dev/null; then
+  ollama serve &>/dev/null &
+  OLLAMA_TEMP_PID=$!
+  for _ in {1..30}; do ollama list &>/dev/null && break; sleep 1; done
+fi
+
+if ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$OLLAMA_MODEL"; then
+  echo "$OLLAMA_MODEL already pulled, skipping."
+else
+  echo "Pulling $OLLAMA_MODEL..."
+  ollama pull "$OLLAMA_MODEL"
 fi
 
 echo ""

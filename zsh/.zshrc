@@ -53,6 +53,11 @@ if [ "$GHOSTTY_USE_OMZ" = "1" ]; then
         tmux attach-session -t default || tmux new-session -s default
     fi
 
+    # ollama start/stop/restart 
+    alias ollama-start="brew services start ollama"
+    alias ollama-stop="brew services stop ollama"
+    alias ollama-restart="brew services restart ollama"
+
 else
     # Clean setup for when you aren't using Ghostty
     autoload -Uz compinit && compinit
