@@ -15,7 +15,7 @@ This tmux configuration includes automatic theme switching between Catppuccin La
 
 ### Features
 
-- **Automatic Detection**: Uses `tmux-dark-notify` plugin to monitor system appearance changes
+- **Automatic Detection**: `dark-notify-runner.sh` runs `dark-notify` to monitor system appearance changes, and exits with the tmux server
 - **Catppuccin Themes**:
   - Dark mode: Catppuccin Mocha
   - Light mode: Catppuccin Latte
@@ -51,7 +51,7 @@ You can manually toggle themes using the provided script:
 ### Troubleshooting
 
 If automatic switching doesn't work:
-1. Ensure `tmux-dark-notify` plugin is properly installed
+1. Ensure `dark-notify` is installed (`brew install dark-notify`) and `pgrep -fl dark-notify` shows it running
 2. Check that the theme files exist in the `themes/` directory
 3. Verify your macOS system appearance settings
 4. Use the manual toggle script as a fallback

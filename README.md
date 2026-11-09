@@ -105,7 +105,7 @@ export EDITOR="nvim"
 
 ### Tmux auto theme switching
 
-The tmux bar automatically switches between **Catppuccin Latte** (light) and **Catppuccin Mocha** (dark) when macOS appearance changes. This is powered by `dark-notify` + `tmux-dark-notify` plugin.
+The tmux bar automatically switches between **Catppuccin Latte** (light) and **Catppuccin Mocha** (dark) when macOS appearance changes. This is powered by `dark-notify`, started by `tmux/dark-notify-runner.sh`.
 
 ### Zsh + Oh My Zsh
 
