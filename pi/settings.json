@@ -1,5 +1,8 @@
 {
-  "lastChangelogVersion": "1.5.0",
+  "lastChangelogVersion": "1.5.2",
   "defaultProvider": "ollama_local",
-  "defaultModel": "qwen3.5:9b"
+  "defaultModel": "qwen3.5:9b",
+  "packages": [
+    "../../.local/pipx/venvs/graphifyy/lib/python3.14/site-packages/graphify/pi"
+  ]
 }

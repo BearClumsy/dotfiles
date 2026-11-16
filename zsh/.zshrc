@@ -57,6 +57,7 @@ if [ "$GHOSTTY_USE_OMZ" = "1" ]; then
     alias ollama-start="brew services start ollama"
     alias ollama-stop="brew services stop ollama"
     alias ollama-restart="brew services restart ollama"
+    alias ollama-status="brew services info ollama"
 
 else
     # Clean setup for when you aren't using Ghostty
