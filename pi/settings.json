@@ -3,6 +3,7 @@
   "defaultProvider": "ollama_local",
   "defaultModel": "qwen3.5:9b",
   "packages": [
-    "../../.local/pipx/venvs/graphifyy/lib/python3.14/site-packages/graphify/pi"
+    "../../.local/pipx/venvs/graphifyy/lib/python3.14/site-packages/graphify/pi",
+    "../../.local/share/uv/tools/graphifyy/lib/python3.15/site-packages/graphify/pi"
   ]
 }
