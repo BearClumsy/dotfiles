@@ -12,8 +12,8 @@
 #             generator) fires that AFTER Stop, which re-armed green on a finished
 #             turn and left the tab stuck. A real resumption re-arms via its own
 #             tool calls; one that only writes text ends in another Stop anyway.
-#   stop    - Stop: clear "busy", ring native bell (blue when unfocused, and tmux
-#             clears the bell by itself once the window is focused).
+#   stop    - Stop: clear "busy", set @claude_pane_done (blue until that pane is seen)
+#             and ring the native bell for the terminal.
 #             EXCEPT a Stop that fired only because the turn handed control to a
 #             background sub-agent: its hook payload still lists that sub-agent
 #             under background_tasks with a live status. That is not "finished" -
@@ -24,6 +24,8 @@
 #             background_tasks check included.
 #             A permission prompt lands here too; the next PreToolUse/PostToolUse
 #             after you approve puts the tab back to green.
+#   fail    - Shell commands only (zsh/tmux-notify.zsh, non-zero exit): like stop,
+#             but sets @claude_pane_failed (red) instead of @claude_pane_done (blue).
 #   end     - SessionEnd: clear "busy" WITHOUT ringing. Claude exiting is not a
 #             completed task, so it must not raise a needs-attention notification;
 #             this just stops a killed/crashed session leaving the tab stuck green.
@@ -35,6 +37,12 @@
 # id behind. tmux.conf aggregates instead: @claude_busy expands #{P:} across the
 # rendered window's own panes, so there is nothing shared to race on and a dead pane
 # takes its state with it.
+#
+# Callers: Claude Code hooks, Pi (pi-tmux-notify.ts) and zsh preexec/precmd for long
+# shell commands like make / brew upgrade (zsh/tmux-notify.zsh).
+#
+# The tab colour follows the window's ACTIVE pane, like its name (tmux.conf), so a
+# Claude split next to a running make shows whichever one has focus.
 
 [ -n "$TMUX" ] || exit 0
 
@@ -43,7 +51,7 @@ pane="${TMUX_PANE:-}"
 
 case "$1" in
   start) busy=1 ;;
-  stop | notify | end) busy=0 ;;
+  stop | notify | end | fail) busy=0 ;;
   *) exit 0 ;;
 esac
 
@@ -75,7 +83,7 @@ log=~/.cache/claude-notify.log
 # roundtrip rather than a set plus a refresh-client fan-out. Only start short-circuits:
 # a repeat stop still has a bell to ring.
 if [ "$1" = start ] &&
-  [ "$(tmux display-message -p -t "$pane" '#{@claude_pane_busy}' 2>/dev/null)" = 1 ]; then
+  [ "$(tmux display-message -p -t "$pane" '#{@claude_pane_busy}#{@claude_pane_done}#{@claude_pane_failed}' 2>/dev/null)" = 1 ]; then
   exit 0
 fi
 
@@ -97,8 +105,29 @@ fi
 
 tmux set-option -p -t "$pane" @claude_pane_busy "$busy" 2>/dev/null
 
+# Finished/failed are per-pane flags, not tmux's window-wide bell flag, so the tab can
+# show the FOCUSED pane's state (like its name) instead of whichever pane rang last.
+# A pane you are already looking at gets no flag: there is nothing unread.
+# clear-seen.sh drops them once the pane becomes visible.
+done=0 failed=0
 case "$1" in
-  stop | notify)
+  stop | notify) done=1 ;;
+  fail) failed=1 ;;
+esac
+if [ $((done + failed)) = 1 ] &&
+  [ "$(tmux display-message -p -t "$pane" '#{&&:#{pane_active},#{&&:#{window_active},#{session_attached}}}' 2>/dev/null)" = 1 ]; then
+  done=0 failed=0
+fi
+for opt in done:$done failed:$failed; do
+  if [ "${opt#*:}" = 1 ]; then
+    tmux set-option -p -t "$pane" "@claude_pane_${opt%%:*}" 1 2>/dev/null
+  else
+    tmux set-option -p -u -t "$pane" "@claude_pane_${opt%%:*}" 2>/dev/null
+  fi
+done
+
+case "$1" in
+  stop | notify | fail)
     tty=$(tmux display-message -p -t "$pane" '#{pane_tty}')
     [ -w "$tty" ] && printf '\a' > "$tty"
     ;;

@@ -9,6 +9,21 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ## Run
 `Ctrl+I`
 
+## Tab States
+
+Window tabs show the state of Claude Code, Pi and watched shell commands. Like the tab
+name, the colour follows the window's focused pane:
+
+| Colour | Meaning |
+|--------|---------|
+| green | working (agent turn, or a watched command running) |
+| blue | finished while you were elsewhere; clears once you see that pane |
+| red | a watched shell command exited non-zero; clears once you see that pane |
+
+Watched commands are listed in `TMUX_NOTIFY_COMMANDS` in `~/.dotfiles/zsh/tmux-notify.zsh`
+(make, gmake, gnumake, brew upgrade/update/install/reinstall/bundle). Ctrl-C clears the
+tab without a bell. `touch ~/.cache/claude-notify.log` to log transitions.
+
 ## Auto Theme Switching
 
 This tmux configuration includes automatic theme switching between Catppuccin Latte (light) and Mocha (dark) based on your macOS system appearance.
