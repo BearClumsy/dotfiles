@@ -7,5 +7,6 @@
 --ignore=^pi
 --ignore=setup.sh
 --ignore=.claude
+--ignore=.mcp.json
 --ignore=screenshots
 --ignore=README.md
