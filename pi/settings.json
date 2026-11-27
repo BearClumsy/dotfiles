@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.6.0",
+  "lastChangelogVersion": "1.6.1",
   "defaultProvider": "ollama_local",
   "defaultModel": "qwen3.5:9b",
   "packages": [
